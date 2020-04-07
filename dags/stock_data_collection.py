@@ -82,6 +82,7 @@ def save_indicator(stock_name):
 
 
 
+
 def data_collection(stock_name,api_key):
     df = pd.read_json('https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol='+stock_name.upper()+'&interval=60min&outputsize=full&apikey='+api_key)# df = pd.DataFrame(df['Time Series (60min)'].values)
     data = df['Time Series (60min)'][6:15]
@@ -125,7 +126,8 @@ def remove_zero():
                                       database = "stock_data")
     cur = conn.cursor()
 
-    cur.execute('''
+    
+    cur.execute(f'''
     DELETE 
     FROM stock_data
     WHERE volume = 0;
@@ -135,9 +137,6 @@ def remove_zero():
     conn.close() 
 
 
-    
-    
-    
 
 
 
@@ -251,9 +250,9 @@ rm_zero = PythonOperator(
     task_id='remove_zero_volume',
     python_callable=remove_zero,
     dag=dag,
-
-
 )
+
+
 aapl_ind = PythonOperator(
     task_id='aapl_indicator',
     python_callable=save_indicator,
@@ -316,5 +315,11 @@ wmt_ind = PythonOperator(
     dag=dag,
 )
 
+jpm_ind = PythonOperator(
+    task_id='jpm_indicator',
+    python_callable=save_indicator,
+    op_kwargs={'stock_name': 'jpm'},
+    dag=dag,
+)
 
-[jpm,dis,nke,ibm,intc] >> t0 >>[aapl,msft,ge,v,wmt] >> rm_zero >>[aapl_ind,dis_ind,ge_ind,ibm_ind,intc_ind,msft_ind,nke_ind,v_ind,wmt_ind]
+[jpm,dis,nke,ibm,intc] >> t0 >>[aapl,msft,ge,v,wmt] >> rm_zero >> [jpm_ind,aapl_ind,dis_ind,ge_ind,ibm_ind,intc_ind,msft_ind,nke_ind,v_ind,wmt_ind]
