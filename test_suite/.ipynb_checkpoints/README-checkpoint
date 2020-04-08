@@ -1,0 +1,11 @@
+The unittest framework does not support jupyter notebook. So I copy the important functions into the lstm_multivariative_multistep.py file for unit testing.
+
+Since the machine learning code is quite different than other application
+Some code with database interaction and calculation will be tested
+The other function such as plotting, store data to database will not be covered in the test suite 
+
+The function run on the airflow also cover in the test suite. However, some of the function is not able to test 
+such as storing data to the database. As a reuslt, function to store the data into the database would not covered in the test suite
+
+The airflow service is on https://162.246.157.108/airflow/admin/
+Please ask student for password and username
